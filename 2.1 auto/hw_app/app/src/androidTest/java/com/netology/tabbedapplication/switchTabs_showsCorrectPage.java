@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.is;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class switchTabs_showsCorrectPage {
+public class SwitchTabsTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
@@ -43,34 +43,26 @@ public class switchTabs_showsCorrectPage {
 
     @Test
     public void switchTabs_showsCorrectPage() {
-    ViewInteraction textView = onView(
-allOf(withId(R.id.section_label), withText("Page: 1"),
-withParent(allOf(withId(R.id.constraintLayout),
-withParent(withId(R.id.view_pager)))),
-isDisplayed()));
-    textView.check(matches(withText("Page: 1")));
-    
-    ViewInteraction tabView = onView(
-allOf(withContentDescription("Tab 2"),
-childAtPosition(
-childAtPosition(
-withId(R.id.tabs),
-0),
-1),
-isDisplayed()));
-    tabView.perform(click());
-    
-    ViewInteraction textView2 = onView(
-allOf(withId(R.id.section_label), withText("Page: 2"),
-withParent(allOf(withId(R.id.constraintLayout),
-withParent(withId(R.id.view_pager)))),
-isDisplayed()));
-    textView2.check(matches(withText("Page: 2")));
+        // Проверяем начальное состояние (Page 1)
+        onView(allOf(
+                withId(R.id.section_label), 
+                withText("Page: 1"),
+                isDisplayed()
+        )).check(matches(withText("Page: 1")));
+
+        // Кликаем по второй вкладке
+        onView(withContentDescription("Tab 2"))
+                .perform(click());
+
+        // Проверяем переход на Page 2
+        onView(allOf(
+                withId(R.id.section_label), 
+                withText("Page: 2"),
+                isDisplayed()
+        )).check(matches(withText("Page: 2")));
     }
 
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
+    private static Matcher<View> childAtPosition(final Matcher<View> parentMatcher, final int position) {
         return new TypeSafeMatcher<View>() {
             @Override
             public void describeTo(Description description) {
@@ -82,7 +74,7 @@ isDisplayed()));
             public boolean matchesSafely(View view) {
                 ViewParent parent = view.getParent();
                 return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup)parent).getChildAt(position));
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
     }
